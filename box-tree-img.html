@@ -7,8 +7,8 @@
         rect {
             fill: white;
             stroke: silver;
-            width: 80px;
-            height: 40px;
+            width: 120px;
+            height: 45px;
             stroke-width: 2px; /* Толщина границы прямоугольника */
         }
 
@@ -26,38 +26,28 @@
         .bigger {
             font-size: 20px;
         }
-        #details{
-            position: absolute;
-            left: 320px;
-            top:120px;
-            width: 200px;
-            height: 30px;
-            background: grey;
-            color: white;
-            visibility: hidden;
-            border-radius: 15px;
-            text-align: center;
-            padding: 15px;
-            font-size: 20px;
 
+        image {
+            width: 60px;
+            height: 40px;
         }
     </style>
 </head>
 <body>
-<div id="details"></div>
+
 <script type="application/javascript">
     let svg = d3.select("body").append("svg")
         .attr("width", 900).attr('height', 600)
         .append('g').attr('transform', 'translate(50,50)');
 
     let data = [
-        {'child': 'John', 'parent': '', 'spouse':'Isabella'},
+        {'child': 'John', 'parent': '', 'icon': 'logo.png'},
         {'child': 'Aaron', 'parent': 'Kevin'},
-        {'child': 'Kevin', 'parent': 'John', 'spouse':'Emma'},
-        {'child': 'Hannah', 'parent': 'Ann', 'spouse':'Williams'},
+        {'child': 'Kevin', 'parent': 'John', 'icon': 'logo.png'},
+        {'child': 'Hannah', 'parent': 'Ann', 'icon': 'chen.jpg'},
         {'child': 'Rose', 'parent': 'Sarah'},
-        {'child': 'Ann', 'parent': 'John', 'spouse':'George'},
-        {'child': 'Sarah', 'parent': 'Kevin', 'spouse':'James'},
+        {'child': 'Ann', 'parent': 'John', 'icon': 'chen.jpg'},
+        {'child': 'Sarah', 'parent': 'Kevin', 'icon': 'chen.jpg'},
         {'child': 'Mark', 'parent': 'Ann'},
         {'child': 'Angel', 'parent': 'Sarah'},
         {'child': 'Tom', 'parent': 'Hannah'},
@@ -87,27 +77,26 @@
         .data(information.descendants());
     rectangles.enter().append('rect')
         .attr('x', function (d) {
-            return d.x - 40;
+            return d.x - 60;
         })
         .attr('y', function (d) {
             return d.y - 20;
         })
-        .on('mousedown',function (d) {
-            d3.select('#details')
-                .style('visibility','visible')
-                .html(function () {
-                    if(d.data.spouse !== undefined){
-                        return 'Spouse: ' + d.data.spouse;
-                    }else{
-                        return 'No Spouse';
-                    }
-                })
-        })
-        .on('mouseup', function () {
-            d3.select('#details').style('visibility', 'hidden');
-        })
     ;
 
+    let pictures = svg.append('g').selectAll('image')
+        .data(information.descendants());
+
+    pictures.enter().append('image')
+        .attr('href', function (d) {
+            return d.data.icon;
+        })
+        .attr('x', function (d) {
+            return d.x-65;
+        })
+        .attr('y', function (d) {
+            return d.y;
+        });
 
     let names = svg.append('g').selectAll('text')
         .data(information.descendants());
