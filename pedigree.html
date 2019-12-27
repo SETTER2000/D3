@@ -160,7 +160,7 @@
             })
             .attr('y', function (d) {
                 return d.y - 15;
-            });
+            }).call(drag);
 
         let names = svg.append('g').selectAll('text')
             .data(information.descendants());
