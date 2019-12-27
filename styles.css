@@ -1,0 +1,8 @@
+rect.bar{
+    background-color: #ff901f;
+    fill: #ff1625;
+    stroke: #ff901f;
+    width: 320px;
+    height: 130px;
+    stroke-width: 2px; /* Толщина границы прямоугольника */
+}

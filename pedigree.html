@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <script type="application/javascript" src="http://d3js.org/d3.v5.min.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+        }
+
+        .changing {
+            fill: white;
+            stroke: black;
+            stroke-width: 4;
+        }
+
+        #square {
+            background-color: #6a5398;
+            width: 5880px;
+            height: 100vh;
+
+        }
+
+        /*svg {*/
+            /*background: cornflowerblue;*/
+            /*width: 800px;*/
+            /*height: 600px;*/
+        /*}*/
+
+        rect {
+            fill: white;
+            stroke: white;
+            width: 320px;
+            height: 130px;
+            stroke-width: 2px; /* Толщина границы прямоугольника */
+        }
+
+        path {
+            fill: none;
+            stroke: white;
+            stroke-width: 2px;
+        }
+
+        text {
+            dominant-baseline: middle;
+            text-anchor: middle;
+        }
+
+        .bigger {
+            font-size: 20px;
+            font-stretch: semi-expanded;
+            font-weight: 600;
+            font-family: initial;
+            font: small-caption;
+        }
+
+        image {
+            width: 100px;
+            height: 80px;
+        }
+    </style>
+</head>
+<body>
+<div id="square"></div>
+<script type="application/javascript">
+    d3.json('data.json').then(function (data) {
+
+        let width = 5800, height = 880;
+
+        function changeStyle() {
+            d3.select('#square')
+                .transition()
+                .duration(2000)
+                .style('background-color', '#990af0')
+            // .attr('x', function (d) {
+            //     return d.x-100;
+            // })
+            // .attr('y', function (d) {
+            //     return d.y-200;
+            // })
+        }
+
+
+        let positions = function () {
+            return [{x: 20, y: 20}];
+        };
+        let svg = d3.select("#square").append("svg")
+            .attr("width", width).attr('height', height)
+            .append('g').attr('transform', 'translate(50,50)')
+            .data(positions);
+        let drag = d3.drag()
+            .on('drag', moving)
+            .on('start', started)
+            .on('end', over)
+        ;
+        svg.enter().append('rect')
+            .attr('x', function (d) {
+                return d.x;
+            })
+            .attr('y', function (d) {
+                return d.y;
+            })
+            .call(drag);
+
+        function moving() {
+            d3.select(this).attr('x', d3.event.x).attr('y', d3.event.y);
+        }
+
+        function started() {
+            d3.select(this).classed('changing', true);
+        }
+
+        function over() {
+            d3.select(this).classed('changing', false);
+        }
+
+        let dataStructure = d3.stratify().id(function (d) {
+            return d.id;
+        }).parentId(function (d) {
+            return d.parentId;
+        })
+        (data);
+        dataStructure.each(function (d) {
+            d.name = d.data.name;
+        });
+        let treeStructure = d3.tree()
+            .separation(function (a, b) {
+                return a.parent === b.parent ? 2 : 2;
+            })
+            .size([5800, 690]);
+        let information = treeStructure(dataStructure);
+        console.log(information.descendants());
+        console.log(information.links());
+        let connections = svg.append('g').selectAll('path').data(information.links());
+        connections.enter().append('path')
+            .attr('d', function (d) {
+                return 'M' + d.source.x + ',' + d.source.y + ' v 50 H' + d.target.x + ' V' + d.target.y;
+            });
+
+        let rectangles = svg.append('g').selectAll('rect')
+            .data(information.descendants());
+        rectangles.enter().append('rect')
+            .attr('x', function (d) {
+                return d.x - 160;
+            })
+            .attr('y', function (d) {
+                return d.y - 20;
+            })
+        ;
+
+        let pictures = svg.append('g').selectAll('image').data(information.descendants());
+
+        pictures.enter().append('image')
+            .attr('href', function (d) {
+                return d.data.icon;
+            })
+            .attr('x', function (d) {
+                return d.x - 155;
+            })
+            .attr('y', function (d) {
+                return d.y - 15;
+            });
+
+        let names = svg.append('g').selectAll('text')
+            .data(information.descendants());
+        names.enter().append('text')
+            .text(function (d) {
+                return d.data.child;
+            })
+            .attr('x', function (d) {
+                return d.x + 20;
+            })
+            .attr('y', function (d) {
+                return d.y + 5;
+            })
+            .classed('bigger', true);
+
+
+        let genders = svg.append('g').selectAll('text')
+            .data(information.descendants());
+        genders.enter().append('text')
+            .text(function (d) {
+                return d.data.gender;
+            })
+            .attr('x', function (d) {
+                return d.x;
+            })
+            .attr('y', function (d) {
+                return d.y + 25;
+            })
+            .classed('bigger', true);
+    });
+</script>
+</body>
+</html>

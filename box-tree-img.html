@@ -51,6 +51,7 @@
         {'child': 'Mark', 'parent': 'Ann'},
         {'child': 'Angel', 'parent': 'Sarah'},
         {'child': 'Tom', 'parent': 'Hannah'},
+        {'child': 'Anna', 'parent': 'Hannah'},
     ];
 
     let dataStructure = d3.stratify().id(function (d) {
@@ -60,7 +61,11 @@
     })
     (data);
 
-    let treeStructure = d3.tree().size([650, 300]);
+    let treeStructure = d3.tree()
+        .separation(function (a,b) {
+            return a.parent===b.parent ? 2 : 2;
+        })
+        .size([650, 300]);
     let information = treeStructure(dataStructure);
     console.log(information.descendants());
     // console.log(information.links());
@@ -95,7 +100,7 @@
             return d.x-65;
         })
         .attr('y', function (d) {
-            return d.y;
+            return d.y-18;
         });
 
     let names = svg.append('g').selectAll('text')
@@ -105,10 +110,10 @@
             return d.data.child;
         })
         .attr('x', function (d) {
-            return d.x;
+            return d.x+20;
         })
         .attr('y', function (d) {
-            return d.y;
+            return d.y+5;
         })
         .classed('bigger', true);
 </script>

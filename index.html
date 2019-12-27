@@ -16,29 +16,34 @@
 </head>
 <body>
 <script type="application/javascript">
+
     let svg = d3.select("body").append("svg")
         .attr("width", 600).attr('height', 600)
         .append('g').attr('transform', 'translate(50,50)');
 
     let data = [
-        {'child': 'John', 'parent': ''},
-        {'child': 'Aaron', 'parent': 'Kevin'},
-        {'child': 'Kevin', 'parent': 'John'},
-        {'child': 'Hannah', 'parent': 'Ann'},
-        {'child': 'Rose', 'parent': 'Sarah'},
-        {'child': 'Ann', 'parent': 'John'},
-        {'child': 'Sarah', 'parent': 'Kevin'},
-        {'child': 'Mark', 'parent': 'Ann'},
-        {'child': 'Angel', 'parent': 'Sarah'},
-        {'child': 'Tom', 'parent': 'Hannah'},
+        {'id': 1, 'parentId': null, 'child': 'John', 'parent': ''},
+        {'id': 4, 'parentId': 2, 'child': 'John', 'parent': 'Kevin'},
+        {'id': 2, 'parentId': 1, 'child': 'Kevin', 'parent': 'John'},
+        {'id': 6, 'parentId': 3, 'child': 'Hannah', 'parent': 'Ann'},
+        {'id': 8, 'parentId': 5, 'child': 'Rose', 'parent': 'Sarah'},
+        {'id': 3, 'parentId': 1, 'child': 'Ann', 'parent': 'John'},
+        {'id': 5, 'parentId': 2, 'child': 'Sarah', 'parent': 'Kevin'},
+        {'id': 7, 'parentId': 3, 'child': 'Mark', 'parent': 'Ann'},
+        {'id': 9, 'parentId': 5, 'child': 'Kevin', 'parent': 'Sarah'},
+        {'id': 10, 'parentId': 6, 'child': 'Tom', 'parent': 'Hannah'},
     ];
 
-    let dataStructure = d3.stratify().id(function (d) {
-        return d.child;
-    }).parentId(function (d) {
-        return d.parent;
-    })
-    (data);
+    let dataStructure = d3.stratify()
+        .id(function (d) {
+            return d.id;
+        }).parentId(function (d) {
+            return d.parentId;
+        })(data);
+
+    dataStructure.each(function (d) {
+        d.name = d.data.name;
+    });
 
     let treeStructure = d3.tree().size([500, 300]);
     let information = treeStructure(dataStructure);
